@@ -1,11 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { translateAuthError } from "@/lib/authErrors";
 
 export default function LoggInnPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoggInnForm />
+    </Suspense>
+  );
+}
+
+function LoggInnForm() {
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<"logg-inn" | "registrer">(
     searchParams.get("modus") === "registrer" ? "registrer" : "logg-inn"
