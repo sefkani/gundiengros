@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "gundi-engros-dev",
+      "runtimeExecutable": "C:\\Users\\ahmet\\Desktop\\gundiengros.no\\dev-server.cmd",
+      "runtimeArgs": [],
+      "port": 3000
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(where node *)",
+      "Bash(where npm *)",
+      "PowerShell(\\(Get-Command winget -ErrorAction SilentlyContinue\\).Source)",
+      "PowerShell(winget install OpenJS.NodeJS.LTS --silent --accept-package-agreements --accept-source-agreements)",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); node -v; npm -v)",
+      "PowerShell(node -v)",
+      "PowerShell(npm -v)",
+      "Bash(\"/c/Program Files/nodejs/npm\" install)",
+      "Bash(\"/c/Program Files/nodejs/npm\" audit)",
+      "Bash(\"/c/Program Files/nodejs/npm\" view next@16.2.10 peerDependencies)",
+      "Bash(python parse_products.py)",
+      "Bash(python3 -c ' *)"
+    ]
+  }
+}
