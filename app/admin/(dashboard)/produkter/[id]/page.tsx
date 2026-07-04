@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { ProductForm } from "@/components/ProductForm";
 import type { Category, Product } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function RedigerProduktPage({
   params,
 }: {

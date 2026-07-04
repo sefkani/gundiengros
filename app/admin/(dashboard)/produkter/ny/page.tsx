@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { ProductForm } from "@/components/ProductForm";
 import type { Category } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function NyttProduktPage() {
   const supabase = await createClient();
   const { data: categories } = await supabase.from("categories").select("*").order("sort_order");

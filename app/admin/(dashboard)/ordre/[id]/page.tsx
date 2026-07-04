@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { OrderStatusSelect } from "@/components/OrderStatusSelect";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminOrderDetailPage({
   params,
 }: {
