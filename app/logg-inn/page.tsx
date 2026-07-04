@@ -71,6 +71,21 @@ function LoggInnForm() {
       setError(translateAuthError(error.message));
       return;
     }
+
+    fetch("/api/notify-new-customer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        companyName,
+        orgNumber,
+        contactPerson,
+        phone,
+        email,
+      }),
+    }).catch(() => {
+      // Best-effort notification — registration already succeeded regardless.
+    });
+
     setInfo(
       "Takk for registreringen! Kontoen din må godkjennes av Gundi Engros før du kan bestille. Vi tar kontakt så snart som mulig."
     );

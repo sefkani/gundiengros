@@ -66,6 +66,30 @@ export default function HandlekurvPage() {
       return;
     }
 
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("company_name, contact_person")
+      .eq("id", user.id)
+      .single();
+
+    fetch("/api/notify-new-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId: order.id,
+        companyName: profile?.company_name ?? "Ukjent kunde",
+        contactPerson: profile?.contact_person,
+        totalAmount: totalIncVat,
+        items: lines.map((l) => ({
+          name: l.product.name,
+          quantity: l.quantity,
+          lineTotal: l.quantity * l.product.price_ex_vat,
+        })),
+      }),
+    }).catch(() => {
+      // Best-effort notification — order already succeeded regardless.
+    });
+
     clearCart();
     router.push(`/ordre-bekreftet/${order.id}`);
   }
