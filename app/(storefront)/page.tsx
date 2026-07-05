@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -37,6 +38,10 @@ const VALUE_PROPS = [
       "Bestill hele sortimentet fra én oversiktlig katalog, uten telefonordre eller papirskjemaer.",
   },
 ];
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const CATEGORIES = [
   { name: "Frukt & Grønt", icon: Carrot, gradient: "from-green-500 to-emerald-700" },

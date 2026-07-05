@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { CatalogTable } from "@/components/CatalogTable";
 import type { Category, Product } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Produktkatalog",
+  description:
+    "Bla gjennom hele engrossortimentet til Gundi Engros — tørrvarer, frysevarer, kjøtt, meieri, drikke og emballasje. Logg inn som engroskunde for å se priser og bestille.",
+  alternates: { canonical: "/katalog" },
+};
 
 export default async function KatalogPage() {
   const supabase = await createClient();

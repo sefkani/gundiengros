@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { Boxes, ShieldCheck, Truck } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Om oss",
+  description:
+    "Gundi Engros AS er en lokal engrosleverandør på Dokka som leverer bulkvarer til restaurant- og fastfoodbransjen — tørrvarer, frysevarer, kjøtt, meieri, olje og emballasje.",
+  alternates: { canonical: "/om-oss" },
+};
 
 export default function OmOssPage() {
   return (

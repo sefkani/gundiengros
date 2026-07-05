@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Betingelser",
+  description:
+    "Salgsbetingelser, leveringsvilkår, retur og personvernerklæring for Gundi Engros AS' engrosportal.",
+  alternates: { canonical: "/betingelser" },
+};
+
 const SECTIONS = [
   {
     title: "Salgsbetingelser",
