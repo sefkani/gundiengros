@@ -36,9 +36,12 @@ export default async function KatalogPage() {
 
   const canSeePrices = !!user && !!profile?.approved;
 
-  const [{ data: categories }, { data: products }] = await Promise.all([
+  const [{ data: categories }, { data: products }, { data: favorites }] = await Promise.all([
     supabase.from("categories").select("*").order("sort_order"),
     supabase.from("products").select("*").eq("active", true).order("name"),
+    canSeePrices && user
+      ? supabase.from("customer_favorites").select("product_id").eq("user_id", user.id)
+      : Promise.resolve({ data: [] as { product_id: string }[] }),
   ]);
 
   return (
@@ -55,6 +58,8 @@ export default async function KatalogPage() {
         categories={(categories ?? []) as Category[]}
         products={(products ?? []) as Product[]}
         canSeePrices={canSeePrices}
+        userId={user?.id ?? null}
+        favoriteProductIds={(favorites ?? []).map((f) => f.product_id)}
       />
     </main>
   );

@@ -2,26 +2,39 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useCart } from "@/components/CartProvider";
+import { createClient } from "@/lib/supabase/client";
 import { STOCK_STATUS_LABELS, type Category, type Product } from "@/lib/types";
 
 export function CatalogTable({
   categories,
   products,
   canSeePrices,
+  userId,
+  favoriteProductIds = [],
+  onlyFavorites = false,
 }: {
   categories: Category[];
   products: Product[];
   canSeePrices: boolean;
+  userId?: string | null;
+  favoriteProductIds?: string[];
+  onlyFavorites?: boolean;
 }) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | "alle">("alle");
   const [pendingQty, setPendingQty] = useState<Record<string, number>>({});
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(
+    new Set(favoriteProductIds)
+  );
   const { lines, setQuantity } = useCart();
+  const supabase = createClient();
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
+      if (onlyFavorites && !favoriteIds.has(p.id)) return false;
       const matchesCategory =
         activeCategory === "alle" || p.category_id === activeCategory;
       const matchesSearch =
@@ -30,7 +43,7 @@ export function CatalogTable({
         (p.sku ?? "").toLowerCase().includes(search.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [products, search, activeCategory]);
+  }, [products, search, activeCategory, onlyFavorites, favoriteIds]);
 
   function qtyInCart(productId: string) {
     return lines.find((l) => l.product.id === productId)?.quantity ?? 0;
@@ -48,6 +61,30 @@ export function CatalogTable({
     const qty = getPendingQty(product);
     if (qty <= 0) return;
     setQuantity(product, qty);
+  }
+
+  async function toggleFavorite(product: Product) {
+    if (!userId) return;
+    const isFavorite = favoriteIds.has(product.id);
+
+    setFavoriteIds((prev) => {
+      const next = new Set(prev);
+      if (isFavorite) next.delete(product.id);
+      else next.add(product.id);
+      return next;
+    });
+
+    if (isFavorite) {
+      await supabase
+        .from("customer_favorites")
+        .delete()
+        .eq("user_id", userId)
+        .eq("product_id", product.id);
+    } else {
+      await supabase
+        .from("customer_favorites")
+        .insert({ user_id: userId, product_id: product.id });
+    }
   }
 
   return (
@@ -104,6 +141,7 @@ export function CatalogTable({
             {filtered.map((product) => {
               const inCart = qtyInCart(product.id);
               const outOfStock = product.stock_status === "utsolgt";
+              const isFavorite = favoriteIds.has(product.id);
               return (
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
@@ -123,18 +161,35 @@ export function CatalogTable({
                           </div>
                         )}
                       </div>
-                      <div>
-                        <div className="font-medium text-navy-900">{product.name}</div>
-                        {product.package_size && (
-                          <div className="text-xs text-gray-500">
-                            {product.package_size}
-                          </div>
+                      <div className="flex items-start gap-2">
+                        {canSeePrices && userId && (
+                          <button
+                            type="button"
+                            onClick={() => toggleFavorite(product)}
+                            className="mt-0.5 shrink-0 text-gray-300 hover:text-gold-500"
+                            aria-label={
+                              isFavorite ? "Fjern fra min liste" : "Legg til i min liste"
+                            }
+                          >
+                            <Heart
+                              size={18}
+                              className={isFavorite ? "fill-gold-500 text-gold-500" : ""}
+                            />
+                          </button>
                         )}
-                        {product.sku && (
-                          <div className="text-xs text-gray-400">
-                            Varenr: {product.sku}
-                          </div>
-                        )}
+                        <div>
+                          <div className="font-medium text-navy-900">{product.name}</div>
+                          {product.package_size && (
+                            <div className="text-xs text-gray-500">
+                              {product.package_size}
+                            </div>
+                          )}
+                          {product.sku && (
+                            <div className="text-xs text-gray-400">
+                              Varenr: {product.sku}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -217,7 +272,9 @@ export function CatalogTable({
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
-                  Ingen produkter matcher søket ditt.
+                  {onlyFavorites
+                    ? "Du har ingen varer i listen din enda. Gå til katalogen og trykk på hjertet for å legge til varer."
+                    : "Ingen produkter matcher søket ditt."}
                 </td>
               </tr>
             )}

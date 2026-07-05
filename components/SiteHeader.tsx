@@ -142,6 +142,13 @@ export function SiteHeader() {
                     Katalog
                   </Link>
                   <Link
+                    href="/min-liste"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2 text-sm text-navy-900 hover:bg-gray-50"
+                  >
+                    Min liste
+                  </Link>
+                  <Link
                     href="/handlekurv"
                     onClick={() => setMenuOpen(false)}
                     className="block px-4 py-2 text-sm text-navy-900 hover:bg-gray-50"

@@ -248,6 +248,32 @@ create trigger orders_set_updated_at
   for each row execute procedure public.set_updated_at();
 
 -- ---------------------------------------------------------------------------
+-- 4b. CUSTOMER FAVORITES ("Min liste" — personal reorder list)
+-- ---------------------------------------------------------------------------
+create table if not exists public.customer_favorites (
+  user_id uuid not null references public.profiles (id) on delete cascade,
+  product_id uuid not null references public.products (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (user_id, product_id)
+);
+
+create index if not exists customer_favorites_user_idx on public.customer_favorites (user_id);
+
+alter table public.customer_favorites enable row level security;
+
+create policy "Customers can read own favorites"
+  on public.customer_favorites for select
+  using (auth.uid() = user_id);
+
+create policy "Customers can add own favorites"
+  on public.customer_favorites for insert
+  with check (auth.uid() = user_id);
+
+create policy "Customers can remove own favorites"
+  on public.customer_favorites for delete
+  using (auth.uid() = user_id);
+
+-- ---------------------------------------------------------------------------
 -- 5. SEED DATA (example categories + products — replace with your real catalog)
 -- ---------------------------------------------------------------------------
 insert into public.categories (name, slug, sort_order) values
